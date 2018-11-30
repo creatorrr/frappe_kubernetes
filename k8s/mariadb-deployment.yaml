@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.17.0 (a74acad)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mariadb
+  name: mariadb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mariadb
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "123"
+        - name: MYSQL_USER
+          value: root
+        image: mariadb
+        name: mariadb
+        ports:
+        - containerPort: 3306
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/mysql/conf.d
+          name: mariadb-claim0
+        - mountPath: /var/lib/mysql
+          name: mariadb-claim1
+      restartPolicy: Always
+      volumes:
+      - name: mariadb-claim0
+        persistentVolumeClaim:
+          claimName: mariadb-claim0
+      - name: mariadb-claim1
+        persistentVolumeClaim:
+          claimName: mariadb-claim1
+status: {}
